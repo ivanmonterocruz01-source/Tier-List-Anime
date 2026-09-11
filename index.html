@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Tier List de Anime</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">TIER<span>LIST</span></div>
+  <div class="topbar-actions">
+    <span class="user-email" id="userEmail"></span>
+    <button class="btn btn-ghost" id="logoutBtn">Salir</button>
+  </div>
+</div>
+
+<main>
+  <div id="tierContainer"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <strong>Todavía no hay animes en tu lista</strong>
+    Pulsa el botón + de abajo a la derecha para añadir el primero.
+  </div>
+</main>
+
+<button class="fab" id="addBtn" title="Añadir anime">+</button>
+
+<!-- Modal añadir / editar -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Añadir anime</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+
+    <form id="animeForm">
+      <div class="field">
+        <label for="titleInput">Título</label>
+        <input type="text" id="titleInput" required placeholder="Ej: Fullmetal Alchemist: Brotherhood">
+      </div>
+
+      <div class="field">
+        <label for="coverInput">URL de la portada</label>
+        <input type="url" id="coverInput" placeholder="https://...">
+      </div>
+      <div class="cover-preview" id="coverPreview">Sin portada</div>
+
+      <div id="categoriesWrap"></div>
+
+      <div class="score-summary">
+        <div>
+          <div class="hint" style="margin:0 0 2px;">Puntuación total</div>
+          <div class="score-total" id="scoreTotal">0 / 30</div>
+        </div>
+        <div class="score-tier-badge" id="scoreTierBadge">-</div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none;">Eliminar</button>
+        <button type="submit" class="btn btn-accent" id="saveBtn">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

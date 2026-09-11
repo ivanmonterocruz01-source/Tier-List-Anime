@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar · Tier List de Anime</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo brand">TIER<span>LIST</span></div>
+    <div class="auth-sub" id="authSub">Inicia sesión para ver y editar tu lista.</div>
+
+    <div class="auth-msg" id="authMsg"></div>
+
+    <form id="authForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" required autocomplete="current-password" minlength="6">
+      </div>
+      <button type="submit" class="btn btn-accent btn-block" id="submitBtn">Entrar</button>
+    </form>
+
+    <div class="auth-switch">
+      <span id="switchText">¿No tienes cuenta?</span>
+      <button type="button" id="switchBtn">Regístrate</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script>
+let mode = "login"; // "login" | "signup"
+
+const form = document.getElementById("authForm");
+const submitBtn = document.getElementById("submitBtn");
+const switchBtn = document.getElementById("switchBtn");
+const switchText = document.getElementById("switchText");
+const authSub = document.getElementById("authSub");
+const authMsg = document.getElementById("authMsg");
+
+function showMsg(text, type){
+  authMsg.textContent = text;
+  authMsg.className = "auth-msg show " + type;
+}
+
+function setMode(newMode){
+  mode = newMode;
+  authMsg.className = "auth-msg";
+  if(mode === "login"){
+    submitBtn.textContent = "Entrar";
+    authSub.textContent = "Inicia sesión para ver y editar tu lista.";
+    switchText.textContent = "¿No tienes cuenta?";
+    switchBtn.textContent = "Regístrate";
+  } else {
+    submitBtn.textContent = "Crear cuenta";
+    authSub.textContent = "Crea una cuenta para empezar tu tier list.";
+    switchText.textContent = "¿Ya tienes cuenta?";
+    switchBtn.textContent = "Inicia sesión";
+  }
+}
+
+switchBtn.addEventListener("click", () => setMode(mode === "login" ? "signup" : "login"));
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Un momento...";
+
+  if(mode === "login"){
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if(error){
+      showMsg(error.message, "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Entrar";
+    } else {
+      window.location.href = "index.html";
+    }
+  } else {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if(error){
+      showMsg(error.message, "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Crear cuenta";
+    } else {
+      showMsg("Cuenta creada. Si tu proyecto de Supabase pide confirmación por email, revisa tu bandeja. Si no, ya puedes entrar.", "ok");
+      setMode("login");
+      submitBtn.disabled = false;
+    }
+  }
+});
+
+// Si ya hay sesión activa, saltar directo a la app
+supabase.auth.getSession().then(({ data }) => {
+  if(data.session){
+    window.location.href = "index.html";
+  }
+});
+</script>
+
+</body>
+</html>
