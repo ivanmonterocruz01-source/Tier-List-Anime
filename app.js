@@ -1,5 +1,5 @@
 // ============================================================
-// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIER_
+// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIE
 // ============================================================
 
 const CATEGORIES = [
