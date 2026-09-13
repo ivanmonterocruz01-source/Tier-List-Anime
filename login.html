@@ -8,6 +8,7 @@
 </head>
 <body>
 
+  
 <div class="auth-wrap">
   <div class="auth-card">
     <div class="auth-logo brand">TIER<span>LIST</span></div>
@@ -78,7 +79,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Un momento...";
 
   if(mode === "login"){
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if(error){
       showMsg(error.message, "error");
       submitBtn.disabled = false;
@@ -87,7 +88,7 @@ form.addEventListener("submit", async (e) => {
       window.location.href = "index.html";
     }
   } else {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabaseClient.auth.signUp({ email, password });
     if(error){
       showMsg(error.message, "error");
       submitBtn.disabled = false;
@@ -101,7 +102,7 @@ form.addEventListener("submit", async (e) => {
 });
 
 // Si ya hay sesión activa, saltar directo a la app
-supabase.auth.getSession().then(({ data }) => {
+supabaseClient.auth.getSession().then(({ data }) => {
   if(data.session){
     window.location.href = "index.html";
   }

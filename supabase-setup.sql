@@ -39,3 +39,4 @@ create policy "Los usuarios editan solo sus animes"
 create policy "Los usuarios borran solo sus animes"
   on public.animes for delete
   using (auth.uid() = user_id);
+

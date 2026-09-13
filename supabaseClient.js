@@ -4,7 +4,7 @@
 // OJO: la variable se llama "supabaseClient" (no "supabase"),
 // porque la librería cargada desde el CDN ya usa el nombre global
 // "supabase" internamente. Si la llamamos igual, el navegador da
-// error de "Identifier already declar
+// error de "Identifier already decgfdñolhtdlom
 // ============================================================
 
 const SUPABASE_URL = "https://kaneoxtzwihejtpdiqqh.supabase.co";
