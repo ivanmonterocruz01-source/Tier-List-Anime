@@ -1,5 +1,5 @@
 // ============================================================
-// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIERS
+// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIER
 // ============================================================
 
 const CATEGORIES = [
@@ -51,7 +51,7 @@ let currentScores = {};        // puntuaciones activas en el modal
 // ============================================================
 
 async function initAuth() {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await supabaseClient.auth.getSession();
   if (!data.session) {
     window.location.href = "login.html";
     return;
@@ -59,7 +59,7 @@ async function initAuth() {
   currentUser = data.session.user;
   document.getElementById("userEmail").textContent = currentUser.email;
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
     if (!session) window.location.href = "login.html";
   });
 
@@ -67,7 +67,7 @@ async function initAuth() {
 }
 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   window.location.href = "login.html";
 });
 
@@ -76,7 +76,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 // ============================================================
 
 async function loadAnimes() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("animes")
     .select("*")
     .order("created_at", { ascending: true });
@@ -285,10 +285,10 @@ document.getElementById("animeForm").addEventListener("submit", async (e) => {
 
   let error;
   if (editingId) {
-    ({ error } = await supabase.from("animes").update(payload).eq("id", editingId));
+    ({ error } = await supabaseClient.from("animes").update(payload).eq("id", editingId));
   } else {
     payload.user_id = currentUser.id;
-    ({ error } = await supabase.from("animes").insert(payload));
+    ({ error } = await supabaseClient.from("animes").insert(payload));
   }
 
   saveBtn.disabled = false;
@@ -307,7 +307,7 @@ deleteBtn.addEventListener("click", async () => {
   if (!editingId) return;
   if (!confirm("¿Eliminar este anime de tu tier list?")) return;
 
-  const { error } = await supabase.from("animes").delete().eq("id", editingId);
+  const { error } = await supabaseClient.from("animes").delete().eq("id", editingId);
   if (error) {
     alert("No se pudo eliminar: " + error.message);
     return;
