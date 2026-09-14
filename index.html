@@ -7,15 +7,18 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+ 
 <div class="topbar">
   <div class="brand">TIER<span>LIST</span></div>
   <div class="topbar-actions">
-    <span class="user-email" id="userEmail"></span>
+    <button class="user-chip" id="profileBtn" title="Editar perfil">
+      <span class="user-avatar" id="userAvatar"></span>
+      <span class="user-email" id="userEmail"></span>
+    </button>
     <button class="btn btn-ghost" id="logoutBtn">Salir</button>
   </div>
 </div>
-
+ 
 <main>
   <div id="tierContainer"></div>
   <div class="empty-state" id="emptyState" style="display:none;">
@@ -23,9 +26,9 @@
     Pulsa el botón + de abajo a la derecha para añadir el primero.
   </div>
 </main>
-
+ 
 <button class="fab" id="addBtn" title="Añadir anime">+</button>
-
+ 
 <!-- Modal añadir / editar -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
@@ -33,21 +36,21 @@
       <h2 id="modalTitle">Añadir anime</h2>
       <button class="modal-close" id="modalClose">&times;</button>
     </div>
-
+ 
     <form id="animeForm">
       <div class="field">
         <label for="titleInput">Título</label>
         <input type="text" id="titleInput" required placeholder="Ej: Fullmetal Alchemist: Brotherhood">
       </div>
-
+ 
       <div class="field">
         <label for="coverInput">URL de la portada</label>
         <input type="url" id="coverInput" placeholder="https://...">
       </div>
       <div class="cover-preview" id="coverPreview">Sin portada</div>
-
+ 
       <div id="categoriesWrap"></div>
-
+ 
       <div class="score-summary">
         <div>
           <div class="hint" style="margin:0 0 2px;">Puntuación total</div>
@@ -55,7 +58,7 @@
         </div>
         <div class="score-tier-badge" id="scoreTierBadge">-</div>
       </div>
-
+ 
       <div class="modal-actions">
         <button type="button" class="btn btn-danger" id="deleteBtn" style="display:none;">Eliminar</button>
         <button type="submit" class="btn btn-accent" id="saveBtn">Guardar</button>
@@ -63,10 +66,42 @@
     </form>
   </div>
 </div>
-
+ 
+<!-- Modal perfil -->
+<div class="modal-backdrop" id="profileModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Mi perfil</h2>
+      <button class="modal-close" id="profileModalClose">&times;</button>
+    </div>
+ 
+    <form id="profileForm">
+      <div class="avatar-edit">
+        <div class="avatar-edit-preview" id="avatarPreview">?</div>
+        <label class="btn btn-ghost" for="avatarInput">Cambiar foto</label>
+        <input type="file" id="avatarInput" accept="image/*" hidden>
+      </div>
+ 
+      <div class="field">
+        <label for="usernameInput">Nombre de usuario</label>
+        <input type="text" id="usernameInput" placeholder="Cómo quieres que se te vea" maxlength="30">
+      </div>
+ 
+      <div class="field">
+        <label>Email</label>
+        <input type="text" id="profileEmailDisplay" disabled>
+      </div>
+ 
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-accent btn-block" id="profileSaveBtn">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+ 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabaseClient.js"></script>
 <script src="app.js"></script>
-
+ 
 </body>
 </html>

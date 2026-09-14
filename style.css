@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap');
-
+ 
 :root{
   --ink:#15151a;
   --paper:#f4f2ec;
@@ -8,7 +8,7 @@
   --accent-2:#6c4ff6;
   --muted:#6b6b76;
   --line:#15151a;
-
+ 
   --tier-s:#e63462;
   --tier-a:#f2843a;
   --tier-b:#f5c518;
@@ -16,14 +16,14 @@
   --tier-d:#56a3f1;
   --tier-e:#8873c9;
   --tier-f:#6b6b76;
-
+ 
   --radius:10px;
   --shadow-hard: 4px 4px 0 var(--ink);
   --shadow-hard-sm: 2px 2px 0 var(--ink);
 }
-
+ 
 *{ box-sizing:border-box; }
-
+ 
 html,body{
   margin:0;
   min-height:100%;
@@ -31,28 +31,28 @@ html,body{
   color:var(--ink);
   font-family:'Inter',sans-serif;
 }
-
+ 
 body{
   background-image:
     radial-gradient(circle, rgba(21,21,26,0.06) 1px, transparent 1px);
   background-size:16px 16px;
 }
-
+ 
 h1,h2,h3{ margin:0; }
-
+ 
 .brand{
   font-family:'Archivo Black',sans-serif;
   letter-spacing:-0.01em;
   line-height:0.9;
 }
-
+ 
 a{ color:var(--accent); }
-
+ 
 button{
   font-family:inherit;
   cursor:pointer;
 }
-
+ 
 .btn{
   display:inline-flex;
   align-items:center;
@@ -70,28 +70,28 @@ button{
 }
 .btn:hover{ transform:translate(-1px,-1px); }
 .btn:active{ transform:translate(1px,1px); box-shadow:0 0 0 var(--ink); }
-
+ 
 .btn-accent{
   background:var(--accent);
   border-color:var(--ink);
   color:#fff;
 }
-
+ 
 .btn-ghost{
   background:transparent;
   color:var(--ink);
 }
-
+ 
 .btn-block{ width:100%; }
-
+ 
 .btn:disabled{
   opacity:0.5;
   cursor:not-allowed;
   transform:none;
 }
-
+ 
 /* ---------------- AUTH PAGE ---------------- */
-
+ 
 .auth-wrap{
   min-height:100vh;
   display:flex;
@@ -99,7 +99,7 @@ button{
   justify-content:center;
   padding:24px;
 }
-
+ 
 .auth-card{
   width:100%;
   max-width:400px;
@@ -109,19 +109,19 @@ button{
   box-shadow:var(--shadow-hard);
   padding:32px 28px;
 }
-
+ 
 .auth-logo{
   font-size:2rem;
   margin-bottom:4px;
 }
 .auth-logo span{ color:var(--accent); }
-
+ 
 .auth-sub{
   color:var(--muted);
   font-size:0.9rem;
   margin-bottom:24px;
 }
-
+ 
 .field{
   margin-bottom:16px;
 }
@@ -145,7 +145,7 @@ button{
   border-color:var(--accent-2);
   box-shadow:0 0 0 3px rgba(108,79,246,0.18);
 }
-
+ 
 .auth-switch{
   margin-top:18px;
   text-align:center;
@@ -160,7 +160,7 @@ button{
   padding:0;
   text-decoration:underline;
 }
-
+ 
 .auth-msg{
   font-size:0.85rem;
   padding:10px 12px;
@@ -171,9 +171,9 @@ button{
 .auth-msg.show{ display:block; }
 .auth-msg.error{ background:#fde3e9; border:2px solid var(--accent); }
 .auth-msg.ok{ background:#e6f8ee; border:2px solid var(--tier-c); }
-
+ 
 /* ---------------- APP SHELL ---------------- */
-
+ 
 .topbar{
   position:sticky;
   top:0;
@@ -186,16 +186,16 @@ button{
   background:var(--paper);
   border-bottom:3px solid var(--ink);
 }
-
+ 
 .topbar .brand{ font-size:1.4rem; }
 .topbar .brand span{ color:var(--accent); }
-
+ 
 .topbar-actions{
   display:flex;
   align-items:center;
   gap:10px;
 }
-
+ 
 .user-email{
   font-size:0.82rem;
   color:var(--muted);
@@ -206,13 +206,13 @@ button{
   display:none;
 }
 @media (min-width:640px){ .user-email{ display:inline; } }
-
+ 
 main{
   max-width:1100px;
   margin:0 auto;
   padding:28px 20px 80px;
 }
-
+ 
 .empty-state{
   border:3px dashed var(--ink);
   border-radius:var(--radius);
@@ -221,9 +221,9 @@ main{
   color:var(--muted);
 }
 .empty-state strong{ color:var(--ink); display:block; font-size:1.1rem; margin-bottom:6px; }
-
+ 
 /* ---------------- TIER ROWS ---------------- */
-
+ 
 .tier-row{
   display:flex;
   align-items:stretch;
@@ -233,7 +233,7 @@ main{
   overflow:hidden;
   background:var(--panel);
 }
-
+ 
 .tier-chip{
   flex:0 0 74px;
   display:flex;
@@ -244,7 +244,7 @@ main{
   color:var(--ink);
   border-right:3px solid var(--ink);
 }
-
+ 
 .tier-cards{
   flex:1;
   display:flex;
@@ -258,17 +258,17 @@ main{
   font-size:0.85rem;
   font-style:italic;
 }
-
-.tier-s .tier-chip{ background:var(--tier-s); color:var(--ink); }
-.tier-a .tier-chip{ background:var(--tier-a); color:var(--ink); }
+ 
+.tier-s .tier-chip{ background:var(--tier-s); color:#fff; }
+.tier-a .tier-chip{ background:var(--tier-a); color:#fff; }
 .tier-b .tier-chip{ background:var(--tier-b); color:var(--ink); }
 .tier-c .tier-chip{ background:var(--tier-c); color:var(--ink); }
-.tier-d .tier-chip{ background:var(--tier-d); color:var(--ink); }
-.tier-e .tier-chip{ background:var(--tier-e); color:var(--ink); }
-.tier-f .tier-chip{ background:var(--tier-f); color:var(--ink); }
-
+.tier-d .tier-chip{ background:var(--tier-d); color:#fff; }
+.tier-e .tier-chip{ background:var(--tier-e); color:#fff; }
+.tier-f .tier-chip{ background:var(--tier-f); color:#fff; }
+ 
 /* ---------------- ANIME CARD ---------------- */
-
+ 
 .anime-card{
   flex:0 0 148px;
   border:2px solid var(--ink);
@@ -280,7 +280,7 @@ main{
   transition:transform .08s ease;
 }
 .anime-card:hover{ transform:translate(-2px,-2px); }
-
+ 
 .anime-cover{
   width:100%;
   height:200px;
@@ -289,7 +289,7 @@ main{
   background:#e4e1d8;
   border-bottom:2px solid var(--ink);
 }
-
+ 
 .anime-info{ padding:8px 10px 10px; }
 .anime-title{
   font-size:0.82rem;
@@ -306,9 +306,9 @@ main{
   color:var(--muted);
   font-weight:600;
 }
-
+ 
 /* ---------------- FAB ---------------- */
-
+ 
 .fab{
   position:fixed;
   right:24px;
@@ -328,9 +328,9 @@ main{
   line-height:0;
 }
 .fab:hover{ transform:translate(-2px,-2px); }
-
+ 
 /* ---------------- MODAL ---------------- */
-
+ 
 .modal-backdrop{
   position:fixed;
   inset:0;
@@ -343,7 +343,7 @@ main{
   z-index:50;
 }
 .modal-backdrop.show{ display:flex; }
-
+ 
 .modal{
   width:100%;
   max-width:480px;
@@ -353,7 +353,7 @@ main{
   box-shadow:var(--shadow-hard);
   padding:26px;
 }
-
+ 
 .modal-head{
   display:flex;
   align-items:center;
@@ -368,7 +368,7 @@ main{
   line-height:1;
   color:var(--muted);
 }
-
+ 
 .cover-preview{
   width:100%;
   height:160px;
@@ -384,7 +384,7 @@ main{
   overflow:hidden;
 }
 .cover-preview img{ width:100%; height:100%; object-fit:cover; }
-
+ 
 .category-row{
   display:flex;
   align-items:center;
@@ -396,7 +396,7 @@ main{
 .category-row:last-of-type{ border-bottom:none; }
 .category-label{ font-size:0.88rem; font-weight:600; }
 .category-label small{ display:block; font-weight:400; color:var(--muted); font-size:0.72rem; }
-
+ 
 .stars{
   display:flex;
   gap:3px;
@@ -412,7 +412,7 @@ main{
 }
 .star-btn.filled{ color:var(--tier-b); }
 .star-btn:hover{ transform:scale(1.15); }
-
+ 
 .score-summary{
   margin-top:18px;
   padding:14px;
@@ -435,7 +435,7 @@ main{
   align-items:center;
   justify-content:center;
 }
-
+ 
 .modal-actions{
   display:flex;
   gap:10px;
@@ -447,10 +447,75 @@ main{
   color:var(--accent);
   border-color:var(--accent);
 }
-
+ 
 .hint{
   font-size:0.75rem;
   color:var(--muted);
   margin-top:-8px;
   margin-bottom:16px;
+}
+ 
+/* ---------------- PERFIL DE USUARIO ---------------- */
+ 
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:none;
+  border:2px solid transparent;
+  border-radius:999px;
+  padding:4px 10px 4px 4px;
+  transition:border-color .12s ease, background .12s ease;
+}
+.user-chip:hover{
+  border-color:var(--ink);
+  background:var(--panel);
+}
+ 
+.user-avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--accent-2);
+  color:#fff;
+  font-weight:800;
+  font-size:0.8rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex:0 0 auto;
+  border:2px solid var(--ink);
+}
+.user-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+ 
+.avatar-edit{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+.avatar-edit-preview{
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  background:var(--accent-2);
+  color:#fff;
+  font-weight:800;
+  font-size:2rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:3px solid var(--ink);
+}
+.avatar-edit-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }

@@ -1,7 +1,7 @@
 // ============================================================
-// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIER
+// DEFINICIÓN DEL SISTEMA DE PUNTUACIÓN Y TIERS
 // ============================================================
-
+ 
 const CATEGORIES = [
   { key: "historia",     label: "Historia",      desc: "Trama, ritmo, giros, final" },
   { key: "personajes",   label: "Personajes",    desc: "Desarrollo, carisma, secundarios" },
@@ -10,7 +10,7 @@ const CATEGORIES = [
   { key: "originalidad", label: "Originalidad",  desc: "Ideas propias, aporte al género" },
   { key: "plus",         label: "Plus personal", desc: "BSO, emoción, nostalgia" },
 ];
-
+ 
 // De arriba a abajo. "reqs" son los mínimos por categoría para
 // poder quedarse en ese tier aunque la puntuación total alcance.
 // Si no se cumplen, se baja al siguiente tier y se vuelve a comprobar.
@@ -23,7 +23,7 @@ const TIERS = [
   { name: "E", min: 6,  max: 10, reqs: {} },
   { name: "F", min: 0,  max: 5,  reqs: {} },
 ];
-
+ 
 function computeTier(scores) {
   const total = CATEGORIES.reduce((sum, c) => sum + (scores[c.key] || 0), 0);
   let idx = TIERS.findIndex(t => total >= t.min && total <= t.max);
@@ -36,20 +36,22 @@ function computeTier(scores) {
   }
   return { total, tier: TIERS[idx].name };
 }
-
+ 
 // ============================================================
 // ESTADO
 // ============================================================
-
+ 
 let currentUser = null;
 let animeList = [];
 let editingId = null;          // null = modo "añadir"
 let currentScores = {};        // puntuaciones activas en el modal
-
+let currentProfile = { username: null, avatar_url: null };
+let pendingAvatarFile = null;  // archivo de foto seleccionado, pendiente de subir
+ 
 // ============================================================
 // AUTENTICACIÓN
 // ============================================================
-
+ 
 async function initAuth() {
   const { data } = await supabaseClient.auth.getSession();
   if (!data.session) {
@@ -57,30 +59,152 @@ async function initAuth() {
     return;
   }
   currentUser = data.session.user;
-  document.getElementById("userEmail").textContent = currentUser.email;
-
+  document.getElementById("profileEmailDisplay").value = currentUser.email;
+ 
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     if (!session) window.location.href = "login.html";
   });
-
+ 
+  await loadProfile();
   await loadAnimes();
 }
-
+ 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await supabaseClient.auth.signOut();
   window.location.href = "login.html";
 });
-
+ 
+// ============================================================
+// PERFIL DE USUARIO
+// ============================================================
+ 
+async function loadProfile() {
+  const { data, error } = await supabaseClient
+    .from("profiles")
+    .select("username, avatar_url")
+    .eq("id", currentUser.id)
+    .maybeSingle();
+ 
+  if (error) {
+    console.error(error);
+  }
+  currentProfile = data || { username: null, avatar_url: null };
+  renderUserChip();
+}
+ 
+function renderUserChip() {
+  const nameToShow = currentProfile.username || currentUser.email;
+  document.getElementById("userEmail").textContent = nameToShow;
+ 
+  const avatarEl = document.getElementById("userAvatar");
+  if (currentProfile.avatar_url) {
+    avatarEl.innerHTML = `<img src="${currentProfile.avatar_url}" alt="">`;
+  } else {
+    avatarEl.textContent = nameToShow.charAt(0).toUpperCase();
+  }
+}
+ 
+const profileModalBackdrop = document.getElementById("profileModalBackdrop");
+const usernameInput = document.getElementById("usernameInput");
+const avatarInput = document.getElementById("avatarInput");
+const avatarPreview = document.getElementById("avatarPreview");
+ 
+document.getElementById("profileBtn").addEventListener("click", () => {
+  pendingAvatarFile = null;
+  usernameInput.value = currentProfile.username || "";
+ 
+  if (currentProfile.avatar_url) {
+    avatarPreview.innerHTML = `<img src="${currentProfile.avatar_url}" alt="">`;
+  } else {
+    avatarPreview.textContent = (currentProfile.username || currentUser.email).charAt(0).toUpperCase();
+  }
+ 
+  profileModalBackdrop.classList.add("show");
+});
+ 
+document.getElementById("profileModalClose").addEventListener("click", () => {
+  profileModalBackdrop.classList.remove("show");
+});
+profileModalBackdrop.addEventListener("click", (e) => {
+  if (e.target === profileModalBackdrop) profileModalBackdrop.classList.remove("show");
+});
+ 
+avatarInput.addEventListener("change", () => {
+  const file = avatarInput.files[0];
+  if (!file) return;
+  pendingAvatarFile = file;
+ 
+  const reader = new FileReader();
+  reader.onload = () => {
+    avatarPreview.innerHTML = `<img src="${reader.result}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+});
+ 
+document.getElementById("profileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const saveBtn = document.getElementById("profileSaveBtn");
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Guardando...";
+ 
+  let avatarUrl = currentProfile.avatar_url || null;
+ 
+  if (pendingAvatarFile) {
+    const ext = pendingAvatarFile.name.split(".").pop();
+    const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
+ 
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from("avatars")
+      .upload(path, pendingAvatarFile, { upsert: true });
+ 
+    if (uploadError) {
+      alert("No se pudo subir la foto: " + uploadError.message);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Guardar cambios";
+      return;
+    }
+ 
+    const { data: publicUrlData } = supabaseClient
+      .storage
+      .from("avatars")
+      .getPublicUrl(path);
+ 
+    avatarUrl = publicUrlData.publicUrl;
+  }
+ 
+  const { error } = await supabaseClient
+    .from("profiles")
+    .upsert({
+      id: currentUser.id,
+      username: usernameInput.value.trim() || null,
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString(),
+    });
+ 
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Guardar cambios";
+ 
+  if (error) {
+    alert("No se pudo guardar el perfil: " + error.message);
+    return;
+  }
+ 
+  currentProfile = { username: usernameInput.value.trim() || null, avatar_url: avatarUrl };
+  renderUserChip();
+  profileModalBackdrop.classList.remove("show");
+});
+ 
 // ============================================================
 // CARGA Y RENDER DE LA LISTA
 // ============================================================
-
+ 
 async function loadAnimes() {
   const { data, error } = await supabaseClient
     .from("animes")
     .select("*")
     .order("created_at", { ascending: true });
-
+ 
   if (error) {
     console.error(error);
     alert("No se pudo cargar tu lista: " + error.message);
@@ -89,40 +213,38 @@ async function loadAnimes() {
   animeList = data || [];
   renderTierList();
 }
-
+ 
 function renderTierList() {
   const container = document.getElementById("tierContainer");
   const emptyState = document.getElementById("emptyState");
   container.innerHTML = "";
-
+ 
   if (animeList.length === 0) {
     emptyState.style.display = "block";
     return;
   }
   emptyState.style.display = "none";
-
+ 
   const grouped = {};
   TIERS.forEach(t => grouped[t.name] = []);
-
+ 
   animeList.forEach(anime => {
     const { total, tier } = computeTier(anime);
     grouped[tier].push({ ...anime, _total: total });
   });
-
-   TIERS.forEach(t => grouped[t.name].sort((a, b) => b._total - a._total));
-
+ 
   TIERS.forEach(t => {
     const row = document.createElement("div");
     row.className = `tier-row tier-${t.name.toLowerCase()}`;
-
+ 
     const chip = document.createElement("div");
     chip.className = "tier-chip";
     chip.textContent = t.name;
     row.appendChild(chip);
-
+ 
     const cardsWrap = document.createElement("div");
     cardsWrap.className = "tier-cards";
-
+ 
     const items = grouped[t.name];
     if (items.length === 0) {
       cardsWrap.classList.add("empty");
@@ -130,17 +252,17 @@ function renderTierList() {
     } else {
       items.forEach(anime => cardsWrap.appendChild(buildCard(anime)));
     }
-
+ 
     row.appendChild(cardsWrap);
     container.appendChild(row);
   });
 }
-
+ 
 function buildCard(anime) {
   const card = document.createElement("div");
   card.className = "anime-card";
   card.addEventListener("click", () => openModal(anime));
-
+ 
   const img = document.createElement("img");
   img.className = "anime-cover";
   img.loading = "lazy";
@@ -148,7 +270,7 @@ function buildCard(anime) {
   img.alt = anime.title;
   img.onerror = () => { img.style.display = "none"; };
   card.appendChild(img);
-
+ 
   const info = document.createElement("div");
   info.className = "anime-info";
   info.innerHTML = `
@@ -156,20 +278,20 @@ function buildCard(anime) {
     <div class="anime-score">${anime._total} / 30</div>
   `;
   card.appendChild(info);
-
+ 
   return card;
 }
-
+ 
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
 }
-
+ 
 // ============================================================
 // MODAL: AÑADIR / EDITAR
 // ============================================================
-
+ 
 const modalBackdrop = document.getElementById("modalBackdrop");
 const modalTitle = document.getElementById("modalTitle");
 const titleInput = document.getElementById("titleInput");
@@ -179,7 +301,7 @@ const categoriesWrap = document.getElementById("categoriesWrap");
 const scoreTotal = document.getElementById("scoreTotal");
 const scoreTierBadge = document.getElementById("scoreTierBadge");
 const deleteBtn = document.getElementById("deleteBtn");
-
+ 
 function buildCategoryRows() {
   categoriesWrap.innerHTML = "";
   CATEGORIES.forEach(cat => {
@@ -190,7 +312,7 @@ function buildCategoryRows() {
       <div class="stars" data-key="${cat.key}"></div>
     `;
     categoriesWrap.appendChild(row);
-
+ 
     const starsWrap = row.querySelector(".stars");
     for (let i = 1; i <= 5; i++) {
       const btn = document.createElement("button");
@@ -208,57 +330,57 @@ function buildCategoryRows() {
     }
   });
 }
-
+ 
 function renderStars(starsWrap, key) {
   const value = currentScores[key] || 0;
   starsWrap.querySelectorAll(".star-btn").forEach(btn => {
     btn.classList.toggle("filled", Number(btn.dataset.value) <= value);
   });
 }
-
+ 
 function renderAllStars() {
   categoriesWrap.querySelectorAll(".stars").forEach(wrap => {
     renderStars(wrap, wrap.dataset.key);
   });
 }
-
+ 
 function updateScoreSummary() {
   const { total, tier } = computeTier(currentScores);
   scoreTotal.textContent = `${total} / 30`;
   scoreTierBadge.textContent = tier;
   scoreTierBadge.style.background = `var(--tier-${tier.toLowerCase()})`;
 }
-
+ 
 function openModal(anime) {
   editingId = anime ? anime.id : null;
   modalTitle.textContent = editingId ? "Editar anime" : "Añadir anime";
   deleteBtn.style.display = editingId ? "inline-flex" : "none";
-
+ 
   titleInput.value = anime ? anime.title : "";
   coverInput.value = anime ? (anime.cover_url || "") : "";
   updateCoverPreview();
-
+ 
   currentScores = {};
   CATEGORIES.forEach(c => currentScores[c.key] = anime ? (anime[c.key] || 0) : 0);
-
+ 
   buildCategoryRows();
   renderAllStars();
   updateScoreSummary();
-
+ 
   modalBackdrop.classList.add("show");
 }
-
+ 
 function closeModal() {
   modalBackdrop.classList.remove("show");
   editingId = null;
 }
-
+ 
 document.getElementById("addBtn").addEventListener("click", () => openModal(null));
 document.getElementById("modalClose").addEventListener("click", closeModal);
 modalBackdrop.addEventListener("click", (e) => {
   if (e.target === modalBackdrop) closeModal();
 });
-
+ 
 coverInput.addEventListener("input", updateCoverPreview);
 function updateCoverPreview() {
   const url = coverInput.value.trim();
@@ -268,23 +390,23 @@ function updateCoverPreview() {
     coverPreview.textContent = "Sin portada";
   }
 }
-
+ 
 // ============================================================
 // GUARDAR / ELIMINAR
 // ============================================================
-
+ 
 document.getElementById("animeForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true;
   saveBtn.textContent = "Guardando...";
-
+ 
   const payload = {
     title: titleInput.value.trim(),
     cover_url: coverInput.value.trim() || null,
     ...currentScores,
   };
-
+ 
   let error;
   if (editingId) {
     ({ error } = await supabaseClient.from("animes").update(payload).eq("id", editingId));
@@ -292,23 +414,23 @@ document.getElementById("animeForm").addEventListener("submit", async (e) => {
     payload.user_id = currentUser.id;
     ({ error } = await supabaseClient.from("animes").insert(payload));
   }
-
+ 
   saveBtn.disabled = false;
   saveBtn.textContent = "Guardar";
-
+ 
   if (error) {
     alert("No se pudo guardar: " + error.message);
     return;
   }
-
+ 
   closeModal();
   await loadAnimes();
 });
-
+ 
 deleteBtn.addEventListener("click", async () => {
   if (!editingId) return;
   if (!confirm("¿Eliminar este anime de tu tier list?")) return;
-
+ 
   const { error } = await supabaseClient.from("animes").delete().eq("id", editingId);
   if (error) {
     alert("No se pudo eliminar: " + error.message);
@@ -317,9 +439,9 @@ deleteBtn.addEventListener("click", async () => {
   closeModal();
   await loadAnimes();
 });
-
+ 
 // ============================================================
 // ARRANQUE
 // ============================================================
-
+ 
 initAuth();
