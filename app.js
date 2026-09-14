@@ -109,6 +109,8 @@ function renderTierList() {
     grouped[tier].push({ ...anime, _total: total });
   });
 
+   TIERS.forEach(t => grouped[t.name].sort((a, b) => b._total - a._total));
+
   TIERS.forEach(t => {
     const row = document.createElement("div");
     row.className = `tier-row tier-${t.name.toLowerCase()}`;
