@@ -232,6 +232,8 @@ function renderTierList() {
     const { total, tier } = computeTier(anime);
     grouped[tier].push({ ...anime, _total: total });
   });
+
+  TIERS.forEach(t => grouped[t.name].sort((a, b) => b._total - a._total));
  
   TIERS.forEach(t => {
     const row = document.createElement("div");
