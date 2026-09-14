@@ -259,13 +259,13 @@ main{
   font-style:italic;
 }
  
-.tier-s .tier-chip{ background:var(--tier-s); color:#fff; }
-.tier-a .tier-chip{ background:var(--tier-a); color:#fff; }
+.tier-s .tier-chip{ background:var(--tier-s); color:var(--ink); }
+.tier-a .tier-chip{ background:var(--tier-a); color:var(--ink); }
 .tier-b .tier-chip{ background:var(--tier-b); color:var(--ink); }
 .tier-c .tier-chip{ background:var(--tier-c); color:var(--ink); }
-.tier-d .tier-chip{ background:var(--tier-d); color:#fff; }
-.tier-e .tier-chip{ background:var(--tier-e); color:#fff; }
-.tier-f .tier-chip{ background:var(--tier-f); color:#fff; }
+.tier-d .tier-chip{ background:var(--tier-d); color:var(--ink); }
+.tier-e .tier-chip{ background:var(--tier-e); color:var(--ink); }
+.tier-f .tier-chip{ background:var(--tier-f); color:var(--ink); }
  
 /* ---------------- ANIME CARD ---------------- */
  
